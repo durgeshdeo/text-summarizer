@@ -1,31 +1,27 @@
-# Use official slim Python 3.10 base image
-FROM python:3.10-slim-bookworm
+FROM python:3.8-slim-bullseye
 
-# Set working directory
+# Set work directory
 WORKDIR /app
 
-# Install essential packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        curl \
-        unzip \
-        ca-certificates \
-        gnupg \
-        lsb-release && \
+# Install required system packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    awscli && \
     rm -rf /var/lib/apt/lists/*
 
-# (Optional) Install AWS CLI v2
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
-    ./aws/install && \
-    rm -rf awscliv2.zip aws
-
-# Copy your code into the container
+# Copy project files
 COPY . /app
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade accelerate
+RUN pip uninstall -y transformers accelerate && \
+    pip install --no-cache-dir transformers accelerate
 
-# Default command (optional)
-CMD ["python", "main.py"]
+# Run the app
+CMD ["python3", "app.py"]
