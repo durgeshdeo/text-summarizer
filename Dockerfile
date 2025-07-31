@@ -17,11 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY . /app
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir --upgrade accelerate
-RUN pip uninstall -y transformers accelerate && \
-    pip install --no-cache-dir transformers accelerate
+RUN pip install -r requirements.txt
+RUN pip install --upgrade accelerate
+RUN pip uninstall -y transformers accelerate
+RUN pip install transformers accelerate
 
 # Run the app
 CMD ["python3", "app.py"]
