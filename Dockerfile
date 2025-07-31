@@ -1,26 +1,18 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.10-slim-bookworm
 
-# Set work directory
 WORKDIR /app
 
-# Install required system packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    unzip \
-    ca-certificates \
-    gnupg \
-    lsb-release \
-    awscli && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        unzip \
+        ca-certificates \
+        gnupg && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy project files
 COPY . /app
 
-# Install Python dependencies
-RUN pip install -r requirements.txt
-RUN pip install --upgrade accelerate
-RUN pip uninstall -y transformers accelerate
-RUN pip install transformers accelerate
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the app
 CMD ["python3", "app.py"]
